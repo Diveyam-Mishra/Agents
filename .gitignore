@@ -3,3 +3,4 @@ myenv
 Not_relevant
 .vscode
 __pycache__
+Weather_app/*

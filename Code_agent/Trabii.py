@@ -7,23 +7,26 @@ load_dotenv()
  
 File_searcher = Agent(
     model=azure_model,
-    knowledge_base=knowledge_base,
+    # knowledge_base=knowledge_base,
     search_knowledge=True,
     name="File Searcher",
+    read_chat_history=True,
     role="Given a task by the user Your task is to find relevant files from it and provide any information that might be needed from those files",
     tools=[Crawl4aiTools(max_length=None),PythonTools()],
 )
 Task_maker = Agent(
     model=azure_model,
-    knowledge_base=knowledge_base,
+    # knowledge_base=knowledge_base,
     name="Task Maker",
     search_knowledge=True,
+    add_history_to_messages=True,
+    read_chat_history=True,
     role="Given a task by the user Your task is break down the problem by thinking through it step by step and develop multiple strategies to solve the problem.",
     tools=[Crawl4aiTools(max_length=None),PythonTools()],
 )
 First_agent = Agent(
     model=azure_model,
-    knowledge=knowledge_base,
+    # knowledge=knowledge_base,
     search_knowledge=True,
     instructions=[
         """You are python coder who loves coding and can work on DBMS as well and you are given a task to work on a repository.
@@ -47,6 +50,8 @@ Checker_reader = Agent(
     model=azure_model,
     search_knowledge=True,
     name="Checker Reader",
+    add_history_to_messages=True,
+    read_chat_history=True,
     role="You are given response from the first agent and you have to check the response and provide the feedback to the first agent.",
     tools=[Crawl4aiTools(max_length=None),PythonTools()],
 )
@@ -61,6 +66,7 @@ web_searcher = Agent(
         "You are a Open Source Contributor and u understand how important File Structure is for the given repo So u make sure when a change is made it accounts for all changes needed in anotehr files related to it by back tracking through import files and it is documented properly."
     ],
     show_tool_calls=True,
+    read_chat_history=True,
     debug_mode=True,
 )
 hn_team = Agent(
@@ -68,6 +74,7 @@ hn_team = Agent(
     search_knowledge=True,
     name="Coding Team",
     team=[File_searcher,Task_maker,First_agent, web_searcher,Checker_reader],
+    add_history_to_messages=True,
     instructions=[
         "First - Carefully analyze the task",
         "Then, break down the problem by thinking through it step by step and develop multiple strategies to solve the problem.",
@@ -101,6 +108,7 @@ hn_team = Agent(
     tools=[Crawl4aiTools(max_length=None),PythonTools()],
     save_response_to_file='responses.txt',
     show_tool_calls=True,
+    read_chat_history=True,
     markdown=True,
 )
 with open("responses.txt", "a") as file:
@@ -109,7 +117,7 @@ with open("responses.txt", "a") as file:
         if user_input.lower() == 'exit':
             break
         
-        response = hn_team.print_response(user_input)
+        response = hn_team.run(user_input)
         
-        file.write(f"Question: {user_input}\nResponse: {response}\n\n")
+        file.write(f"Question: {user_input}\nResponse: {response.content}\n\n")
         print("Response saved to file.")
