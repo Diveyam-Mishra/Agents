@@ -43,7 +43,6 @@ async def process_csv(file_path: Path, user_input: User_input):
     #         print("Connected to PostgreSQL via SQLAlchemy!")
     # except Exception as e:
     #     print(f"Error with SQLAlchemy connection: {e}")
-    # db_url = "postgresql+psycopg2://supplymint:s3cr3t_passw0rd!@smdbquality.supplymint.com:5432/supplymint"
     # Query_agent = Agent(
     #     model=azure_model,
     #     read_chat_history=True,
